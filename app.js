@@ -36,7 +36,7 @@ function playBeep() {
         
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
         
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
