@@ -115,3 +115,16 @@ function syncData() {
 
 window.onload = cekAntreanOffline;
 window.addEventListener('online', syncData);
+
+
+function absenManual() {
+    let inputForm = document.getElementById("input-manual");
+    let manualId = inputForm.value.trim();
+    
+    if (manualId !== "") {
+        onScanSuccess(manualId);
+        inputForm.value = ""; 
+    } else {
+        alert("Ketik ID-nya dulu, Bos!");
+    }
+}
