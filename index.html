@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Absensi Blessing</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        #reader-container {
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #status-box {
+            margin-top: 20px;
+            padding: 15px;
+            width: 80%;
+            max-width: 350px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none; /* Sembunyikan default */
+        }
+        .sukses { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .offline { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        
+        #sync-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            display: none; /* Sembunyikan default */
+            cursor: pointer;
+        }
+        #sync-btn:active { background-color: #2980b9; }
+    </style>
+    <!-- Library QR Code Reader -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+
+    <div class="header">Absensi Toko Blessing</div>
+    
+    <!-- Kotak Kamera Scanner -->
+    <div id="reader-container">
+        <div id="reader"></div>
+    </div>
+
+    <!-- Notifikasi Sukses/Offline -->
+    <div id="status-box"></div>
+
+    <!-- Tombol Sinkronisasi Manual (Muncul jika ada antrean offline) -->
+    <button id="sync-btn" onclick="syncData()">⬆️ Sinkronkan Data Offline</button>
+
+    <script src="app.js"></script>
+</body>
+</html>
