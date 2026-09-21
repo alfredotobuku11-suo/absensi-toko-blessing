@@ -1,39 +1,68 @@
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/library/d/1UqEWMaqR4pKn1QM1MGTjPIt7sFmka5XgS65QaUDZ5nf0dEcWz87R-EAo/24"; 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/library/d/1UqEWMaqR4pKn1QM1MGTjPIt7sFmka5XgS65QaUDZ5nf0dEcWz87R-EAo/24";
 
-let html5QrcodeScanner;
+let html5QrCode;
+let isProcessing = false;
 const statusBox = document.getElementById("status-box");
 const syncBtn = document.getElementById("sync-btn");
-
+const btnKamera = document.getElementById("btn-kamera");
 
 function showStatus(pesan, tipe) {
     statusBox.innerText = pesan;
     statusBox.className = tipe;
     statusBox.style.display = "block";
-    
-    setTimeout(() => {
-        statusBox.style.display = "none";
-    }, 5000);
+    setTimeout(() => { statusBox.style.display = "none"; }, 4000);
+}
+
+function mulaiKamera() {
+    html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        onScanSuccess
+    ).then(() => {
+        btnKamera.style.display = "none";
+    }).catch(err => {
+        showStatus("Gagal akses kamera belakang.", "offline");
+    });
 }
 
 function onScanSuccess(qrCodeMessage) {
+    if (isProcessing) return;
+    isProcessing = true;
+    
     try { navigator.vibrate(200); } catch(e) {} 
     
-    html5QrcodeScanner.pause();
-
-    const timestampNow = Date.now();
-    const dataAbsen = {
-        id: qrCodeMessage,
-        waktu: timestampNow
-    };
+    const dataAbsen = { id: qrCodeMessage, waktu: Date.now() };
 
     if (navigator.onLine) {
         kirimKeServer(dataAbsen);
     } else {
         simpanKeLokal(dataAbsen);
-        showStatus("📶 Offline. Absen " + qrCodeMessage + " disimpan di HP.", "offline");
-        
-        setTimeout(() => { html5QrcodeScanner.resume(); }, 3000);
+        showStatus("📶 Offline. Data " + qrCodeMessage + " disimpan di HP.", "offline");
+        setTimeout(() => { isProcessing = false; }, 3000);
     }
+}
+
+function kirimKeServer(data) {
+    showStatus("Memproses absen...", "offline");
+    const url = GOOGLE_SCRIPT_URL + "?id=" + encodeURIComponent(data.id) + "&waktu=" + data.waktu;
+
+    fetch(url)
+        .then(res => res.json())
+        .then(result => {
+            if (result.status === "sukses") {
+                showStatus("✅ " + result.nama + " Hadir!", "sukses");
+            } else {
+                showStatus("⚠️ Gagal: " + result.pesan, "offline");
+            }
+        })
+        .catch(err => {
+            simpanKeLokal(data);
+            showStatus("Koneksi jelek. Disimpan offline.", "offline");
+        })
+        .finally(() => {
+            setTimeout(() => { isProcessing = false; }, 3000);
+        });
 }
 
 function simpanKeLokal(data) {
@@ -41,29 +70,6 @@ function simpanKeLokal(data) {
     antrean.push(data);
     localStorage.setItem('antreanAbsen', JSON.stringify(antrean));
     cekAntreanOffline();
-}
-
-function kirimKeServer(data) {
-    showStatus("Memproses data...", "offline");
-    
-    const url = GOOGLE_SCRIPT_URL + "?id=" + encodeURIComponent(data.id) + "&waktu=" + data.waktu;
-
-    fetch(url)
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === "sukses") {
-                showStatus("✅ Absen Berhasil! Nama: " + result.nama, "sukses");
-            } else {
-                showStatus("⚠️ Gagal: " + result.pesan, "offline");
-            }
-        })
-        .catch(error => {
-            simpanKeLokal(data);
-            showStatus("Koneksi gagal. Disimpan offline.", "offline");
-        })
-        .finally(() => {
-            setTimeout(() => { html5QrcodeScanner.resume(); }, 3000);
-        });
 }
 
 function cekAntreanOffline() {
@@ -77,47 +83,35 @@ function cekAntreanOffline() {
 }
 
 function syncData() {
-    if (!navigator.onLine) {
-        alert("Anda masih offline! Cari sinyal internet dulu.");
-        return;
-    }
-
+    if (!navigator.onLine) { alert("Toko masih mati lampu/internet mati!"); return; }
+    
     let antrean = JSON.parse(localStorage.getItem('antreanAbsen')) || [];
     if (antrean.length === 0) return;
 
-    syncBtn.innerText = "🔄 Mengirim...";
+    syncBtn.innerText = "🔄 Sedang mengirim...";
     syncBtn.disabled = true;
 
     let dataTeratas = antrean[0];
-
     const url = GOOGLE_SCRIPT_URL + "?id=" + encodeURIComponent(dataTeratas.id) + "&waktu=" + dataTeratas.waktu;
 
     fetch(url)
-        .then(response => response.json())
+        .then(res => res.json())
         .then(result => {
             if (result.status === "sukses") {
                 antrean.shift();
                 localStorage.setItem('antreanAbsen', JSON.stringify(antrean));
-                
                 cekAntreanOffline();
-                if(antrean.length > 0) {
-                     syncData();
-                } else {
-                     syncBtn.disabled = false;
-                     showStatus("✅ Semua data offline berhasil dikirim!", "sukses");
-                }
+                
+                if(antrean.length > 0) syncData(); 
+                else { syncBtn.disabled = false; showStatus("✅ Semua data sinkron!", "sukses"); }
             }
         })
         .catch(err => {
-            alert("Gagal sinkronisasi. Coba lagi nanti.");
+            alert("Gagal sinkron. Coba lagi nanti ya.");
             syncBtn.disabled = false;
             cekAntreanOffline();
         });
 }
 
-html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
-html5QrcodeScanner.render(onScanSuccess);
-
-cekAntreanOffline();
-
-window.addEventListener('online',  syncData);
+window.onload = cekAntreanOffline;
+window.addEventListener('online', syncData);
