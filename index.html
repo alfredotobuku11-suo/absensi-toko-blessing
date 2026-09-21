@@ -6,125 +6,33 @@
     <title>Absensi Blessing</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-        }
-        .header {
-            background-color: #1a252f;
-            color: white;
-            width: 100%;
-            text-align: center;
-            padding: 18px 0;
-            font-size: 22px;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .app-container {
-            width: 90%;
-            max-width: 400px;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-top: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; }
+        .header { background-color: #1a252f; color: white; width: 100%; text-align: center; padding: 18px 0; font-size: 22px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .app-container { width: 90%; max-width: 400px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 30px; display: flex; flex-direction: column; align-items: center; }
         
-        /* Merapikan area kamera bawaan library */
-        #reader {
-            width: 100%;
-            border: none !important;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        /* Merapikan dropdown kamera */
-        #reader select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            margin-bottom: 15px;
-            font-family: inherit;
-        }
-        /* Merapikan tombol bawaan library */
-        #reader button {
-            width: 100%;
-            padding: 12px;
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        #reader button:active {
-            background-color: #1a252f;
-        }
-        #reader__dashboard_section_swaplink {
-            text-decoration: none;
-            color: #3498db;
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-
-        #status-box {
-            margin-top: 20px;
-            padding: 15px;
-            width: 100%;
-            text-align: center;
-            border-radius: 8px;
-            font-weight: bold;
-            display: none;
-            box-sizing: border-box;
-        }
+        #reader { width: 100%; border-radius: 10px; overflow: hidden; background-color: #000; }
+        
+        .btn { width: 100%; padding: 12px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .btn-kamera { background-color: #2c3e50; }
+        .btn-sync { background-color: #e67e22; display: none; }
+        
+        #status-box { margin-top: 15px; padding: 12px; width: 100%; text-align: center; border-radius: 8px; font-weight: bold; display: none; box-sizing: border-box; }
         .sukses { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .offline { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        
-        #sync-btn {
-            margin-top: 15px;
-            width: 100%;
-            padding: 12px;
-            background-color: #e67e22;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            display: none; 
-            cursor: pointer;
-        }
-        #sync-btn:active { background-color: #d35400; }
     </style>
     <!-- Library QR Code Reader -->
     <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-
     <div class="header">Absensi Toko Blessing</div>
-    
     <div class="app-container">
-        <!-- Kotak Kamera Scanner -->
+        <!-- Kamera akan muncul di sini tanpa embel-embel teks inggris -->
         <div id="reader"></div>
-
-        <!-- Notifikasi Sukses/Offline -->
+        <button id="btn-kamera" class="btn btn-kamera" onclick="mulaiKamera()">📸 Buka Kamera Scanner</button>
+        
         <div id="status-box"></div>
-
-        <!-- Tombol Sinkronisasi Manual (Muncul jika ada antrean offline) -->
-        <button id="sync-btn" onclick="syncData()">⬆️ Kirim Data Offline</button>
+        <button id="sync-btn" class="btn btn-sync" onclick="syncData()">⬆️ Kirim Data Offline</button>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>
