@@ -28,9 +28,18 @@
     <div class="app-container">
         <!-- Kamera akan muncul di sini tanpa embel-embel teks inggris -->
         <div id="reader"></div>
-        <button id="btn-kamera" class="btn btn-kamera" onclick="mulaiKamera()">📸 Buka Kamera Scanner</button>
+        <button id="btn-kamera" class="btn btn-kamera" onclick="mulaiKamera()">Scan ID Card</button>
         
         <div id="status-box"></div>
+              <!-- Fitur Input Manual / Lupa ID Card -->
+        <div style="margin-top: 25px; width: 100%; text-align: center; border-top: 1px solid #eee; padding-top: 15px;">
+            <p style="font-size: 12px; color: #7f8c8d; margin-top: 0;">Lupa bawa ID Card?</p>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="input-manual" placeholder="Ketik ID Karyawan..." style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-family: inherit;">
+                <button onclick="absenManual()" style="padding: 12px 15px; background: #34495e; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Kirim</button>
+            </div>
+        </div>
+
         <button id="sync-btn" class="btn btn-sync" onclick="syncData()">⬆️ Kirim Data Offline</button>
     </div>
     <script src="app.js"></script>
