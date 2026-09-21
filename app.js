@@ -14,15 +14,17 @@ function showStatus(pesan, tipe) {
 }
 
 function mulaiKamera() {
+    const readerDiv = document.getElementById("reader");
+    readerDiv.style.display = "block"; 
+
     html5QrCode = new Html5Qrcode("reader");
     html5QrCode.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 250, height: 250 } },
         onScanSuccess
     ).then(() => {
-        btnKamera.style.display = "none";
     }).catch(err => {
-        showStatus("Gagal akses kamera belakang.", "offline");
+        showStatus("Gagal akses kamera. Pastikan izin kamera aktif.", "offline");
     });
 }
 
@@ -58,7 +60,7 @@ function kirimKeServer(data) {
         })
         .catch(err => {
             simpanKeLokal(data);
-            showStatus("Koneksi jelek. Disimpan offline.", "offline");
+            showStatus("Jaringan tarabae. Disimpan offline.", "offline");
         })
         .finally(() => {
             setTimeout(() => { isProcessing = false; }, 3000);
@@ -83,7 +85,7 @@ function cekAntreanOffline() {
 }
 
 function syncData() {
-    if (!navigator.onLine) { alert("Toko masih mati lampu/internet mati!"); return; }
+    if (!navigator.onLine) { alert("Sabar-sabar dulu, jaringan masih ilang yaa"); return; }
     
     let antrean = JSON.parse(localStorage.getItem('antreanAbsen')) || [];
     if (antrean.length === 0) return;
@@ -107,7 +109,7 @@ function syncData() {
             }
         })
         .catch(err => {
-            alert("Gagal sinkron. Coba lagi nanti ya.");
+            alert("Gagal sinkron. Nanti jaga tes-tes ulang.");
             syncBtn.disabled = false;
             cekAntreanOffline();
         });
