@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            background-color: #f0f2f5;
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -16,48 +16,96 @@
             height: 100vh;
         }
         .header {
-            background-color: #2c3e50;
+            background-color: #1a252f;
             color: white;
             width: 100%;
             text-align: center;
-            padding: 15px 0;
-            font-size: 20px;
+            padding: 18px 0;
+            font-size: 22px;
             font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        #reader-container {
-            width: 100%;
+        .app-container {
+            width: 90%;
             max-width: 400px;
-            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* Merapikan area kamera bawaan library */
+        #reader {
+            width: 100%;
+            border: none !important;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+        /* Merapikan dropdown kamera */
+        #reader select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+        /* Merapikan tombol bawaan library */
+        #reader button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        #reader button:active {
+            background-color: #1a252f;
+        }
+        #reader__dashboard_section_swaplink {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
         #status-box {
             margin-top: 20px;
             padding: 15px;
-            width: 80%;
-            max-width: 350px;
+            width: 100%;
             text-align: center;
             border-radius: 8px;
             font-weight: bold;
-            display: none; /* Sembunyikan default */
+            display: none;
+            box-sizing: border-box;
         }
         .sukses { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .offline { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
         
         #sync-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #3498db;
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background-color: #e67e22;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
-            display: none; /* Sembunyikan default */
+            font-weight: bold;
+            display: none; 
             cursor: pointer;
         }
-        #sync-btn:active { background-color: #2980b9; }
+        #sync-btn:active { background-color: #d35400; }
     </style>
     <!-- Library QR Code Reader -->
     <script src="https://unpkg.com/html5-qrcode"></script>
@@ -66,16 +114,16 @@
 
     <div class="header">Absensi Toko Blessing</div>
     
-    <!-- Kotak Kamera Scanner -->
-    <div id="reader-container">
+    <div class="app-container">
+        <!-- Kotak Kamera Scanner -->
         <div id="reader"></div>
+
+        <!-- Notifikasi Sukses/Offline -->
+        <div id="status-box"></div>
+
+        <!-- Tombol Sinkronisasi Manual (Muncul jika ada antrean offline) -->
+        <button id="sync-btn" onclick="syncData()">⬆️ Kirim Data Offline</button>
     </div>
-
-    <!-- Notifikasi Sukses/Offline -->
-    <div id="status-box"></div>
-
-    <!-- Tombol Sinkronisasi Manual (Muncul jika ada antrean offline) -->
-    <button id="sync-btn" onclick="syncData()">⬆️ Sinkronkan Data Offline</button>
 
     <script src="app.js"></script>
 </body>
