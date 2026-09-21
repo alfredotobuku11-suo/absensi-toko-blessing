@@ -28,22 +28,60 @@ function mulaiKamera() {
     });
 }
 
+function playBeep() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.15);
+    } catch(e) {}
+}
+
 function onScanSuccess(qrCodeMessage) {
     if (isProcessing) return;
     isProcessing = true;
     
-    try { navigator.vibrate(200); } catch(e) {} 
+    let hariIni = new Date().toISOString().split('T')[0];
+    let cacheAbsen = JSON.parse(localStorage.getItem('absensiHarianLokal')) || { tanggal: hariIni, ids: [] };
     
+    // Jika tanggal berubah ke hari esok, reset catatan lokal
+    if (cacheAbsen.tanggal !== hariIni) {
+        cacheAbsen = { tanggal: hariIni, ids: [] };
+    }
+
+    if (cacheAbsen.ids.includes(qrCodeMessage)) {
+        try { navigator.vibrate([100, 50, 100]); } catch(e) {} // Getar khusus peringatan
+        showStatus("⚠️ ID " + qrCodeMessage + " sudah input absen hari ini!", "offline");
+        setTimeout(() => { isProcessing = false; }, 3000);
+        return;
+    }
+
+    try { navigator.vibrate(200); } catch(e) {}
+    playBeep(); 
+    
+    cacheAbsen.ids.push(qrCodeMessage);
+    localStorage.setItem('absensiHarianLokal', JSON.stringify(cacheAbsen));
+
     const dataAbsen = { id: qrCodeMessage, waktu: Date.now() };
 
     if (navigator.onLine) {
         kirimKeServer(dataAbsen);
     } else {
         simpanKeLokal(dataAbsen);
-        showStatus("📶 Offline. Data " + qrCodeMessage + " disimpan di HP.", "offline");
+        showStatus("📶 Offline. Data absen disimpan di HP.", "offline");
         setTimeout(() => { isProcessing = false; }, 3000);
     }
 }
+
 
 function kirimKeServer(data) {
     showStatus("Memproses absen...", "offline");
