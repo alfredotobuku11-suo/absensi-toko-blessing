@@ -50,13 +50,12 @@ function onScanSuccess(qrCodeMessage) {
     if (isProcessing) return;
     isProcessing = true;
     
-       let d = new Date();
-    let hariIni = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); // Pakai waktu lokal
-    let cacheAbsen = JSON.parse(localStorage.getItem('dataAbsen_v2')) || { tanggal: hariIni, ids: [], riwayat: [] };
-
-    // Jika tanggal berubah ke hari esok, reset catatan lokal (termasuk riwayatnya)
+    let hariIni = new Date().toISOString().split('T')[0];
+    let cacheAbsen = JSON.parse(localStorage.getItem('absensiHarianLokal')) || { tanggal: hariIni, ids: [] };
+    
+    // Jika tanggal berubah ke hari esok, reset catatan lokal
     if (cacheAbsen.tanggal !== hariIni) {
-        cacheAbsen = { tanggal: hariIni, ids: [], riwayat: [] };
+        cacheAbsen = { tanggal: hariIni, ids: [] };
     }
 
     if (cacheAbsen.ids.includes(qrCodeMessage)) {
@@ -69,18 +68,8 @@ function onScanSuccess(qrCodeMessage) {
     try { navigator.vibrate(200); } catch(e) {}
     playBeep(); 
     
-       cacheAbsen.ids.push(qrCodeMessage);
-    
-    // --- TAMBAHAN UNTUK RIWAYAT ---
-    let namaKaryawan = cariNamaKaryawan(qrCodeMessage);
-    let jamSekarang = new Date().toLocaleTimeString("id-ID", {hour: '2-digit', minute:'2-digit'});
-    
-    if (!cacheAbsen.riwayat) cacheAbsen.riwayat = [];
-    cacheAbsen.riwayat.push({ nama: namaKaryawan, jam: jamSekarang });
-    // ------------------------------
-    
-       localStorage.setItem('dataAbsen_v2', JSON.stringify(cacheAbsen));
-    tampilkanRiwayatLokal(); // Panggil fungsi untuk memperbarui tampilan layar
+    cacheAbsen.ids.push(qrCodeMessage);
+    localStorage.setItem('absensiHarianLokal', JSON.stringify(cacheAbsen));
 
     const dataAbsen = { id: qrCodeMessage, waktu: Date.now() };
 
@@ -164,10 +153,8 @@ function syncData() {
         });
 }
 
-window.onload = function() {
-    cekAntreanOffline();
-    tampilkanRiwayatLokal();
-};
+window.onload = cekAntreanOffline;
+window.addEventListener('online', syncData);
 
 
 function absenManual() {
@@ -179,35 +166,5 @@ function absenManual() {
         inputForm.value = ""; 
     } else {
         alert("Ketik ID-nya dulu, Bos!");
-    }
-}
-
-
-function tampilkanRiwayatLokal() {
-    let d = new Date();
-    let hariIni = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); // Pakai waktu lokal
-    let cacheAbsen = JSON.parse(localStorage.getItem('dataAbsen_v2')) || { tanggal: hariIni, ids: [], riwayat: [] };
-let daftarRiwayat = document.getElementById("daftar-riwayat");
-    
-    
-    if (cacheAbsen.tanggal !== hariIni) {
-        daftarRiwayat.innerHTML = '<li style="text-align: center; color: #777;">Belum ada yang absen hari ini.</li>';
-        return;
-    }
-
-    if (!cacheAbsen.riwayat || cacheAbsen.riwayat.length === 0) {
-        daftarRiwayat.innerHTML = '<li style="text-align: center; color: #777;">Belum ada yang absen hari ini.</li>';
-        return;
-    }
-
-
-    daftarRiwayat.innerHTML = "";
-    for (let i = cacheAbsen.riwayat.length - 1; i >= 0; i--) {
-        let data = cacheAbsen.riwayat[i];
-        let li = document.createElement("li");
-        li.style.padding = "8px";
-        li.style.borderBottom = "1px solid #ddd";
-        li.innerHTML = `✅ <b>${data.nama}</b> <span style="float: right; color: #555;">${data.jam}</span>`;
-        daftarRiwayat.appendChild(li);
     }
 }
