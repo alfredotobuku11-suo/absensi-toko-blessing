@@ -50,9 +50,10 @@ function onScanSuccess(qrCodeMessage) {
     if (isProcessing) return;
     isProcessing = true;
     
-      let hariIni = new Date().toISOString().split('T')[0];
-    let cacheAbsen = JSON.parse(localStorage.getItem('absensiHarianLokal')) || { tanggal: hariIni, ids: [], riwayat: [] };
-    
+       let d = new Date();
+    let hariIni = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); // Pakai waktu lokal
+    let cacheAbsen = JSON.parse(localStorage.getItem('dataAbsen_v2')) || { tanggal: hariIni, ids: [], riwayat: [] };
+
     // Jika tanggal berubah ke hari esok, reset catatan lokal (termasuk riwayatnya)
     if (cacheAbsen.tanggal !== hariIni) {
         cacheAbsen = { tanggal: hariIni, ids: [], riwayat: [] };
@@ -78,7 +79,7 @@ function onScanSuccess(qrCodeMessage) {
     cacheAbsen.riwayat.push({ nama: namaKaryawan, jam: jamSekarang });
     // ------------------------------
     
-    localStorage.setItem('absensiHarianLokal', JSON.stringify(cacheAbsen));
+       localStorage.setItem('dataAbsen_v2', JSON.stringify(cacheAbsen));
     tampilkanRiwayatLokal(); // Panggil fungsi untuk memperbarui tampilan layar
 
     const dataAbsen = { id: qrCodeMessage, waktu: Date.now() };
@@ -183,9 +184,10 @@ function absenManual() {
 
 
 function tampilkanRiwayatLokal() {
-    let hariIni = new Date().toISOString().split('T')[0];
-    let cacheAbsen = JSON.parse(localStorage.getItem('absensiHarianLokal')) || { tanggal: hariIni, riwayat: [] };
-    let daftarRiwayat = document.getElementById("daftar-riwayat");
+    let d = new Date();
+    let hariIni = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); // Pakai waktu lokal
+    let cacheAbsen = JSON.parse(localStorage.getItem('dataAbsen_v2')) || { tanggal: hariIni, ids: [], riwayat: [] };
+let daftarRiwayat = document.getElementById("daftar-riwayat");
     
     
     if (cacheAbsen.tanggal !== hariIni) {
