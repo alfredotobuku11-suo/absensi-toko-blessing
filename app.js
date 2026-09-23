@@ -14,18 +14,31 @@ function showStatus(pesan, tipe) {
 }
 
 function mulaiKamera() {
-    const readerDiv = document.getElementById("reader");
-    readerDiv.style.display = "block"; 
+    try {
+        const readerDiv = document.getElementById("reader");
+        if (!readerDiv) {
+            alert("ERROR 1: Kotak kamera (id='reader') tidak ditemukan di index.html!");
+            return;
+        }
+        readerDiv.style.display = "block"; 
 
-    html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        onScanSuccess
-    ).then(() => {
-    }).catch(err => {
-        showStatus("Gagal akses kamera. Pastikan izin kamera aktif.", "offline");
-    });
+        if (typeof Html5Qrcode === "undefined") {
+            alert("ERROR 2: Mesin scanner belum ter-download! Berarti link Cloudflare di index.html salah tulis atau belum ter-update.");
+            return;
+        }
+
+        html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            onScanSuccess
+        ).catch(err => {
+            alert("ERROR 3: Kamera ditolak oleh HP. Pesan: " + err);
+            showStatus("Gagal akses kamera.", "offline");
+        });
+    } catch (error) {
+        alert("CRASH TOTAL: " + error.message);
+    }
 }
 
 function playBeep() {
@@ -52,14 +65,14 @@ function onScanSuccess(qrCodeMessage) {
     
     let hariIni = new Date().toISOString().split('T')[0];
     let cacheAbsen = JSON.parse(localStorage.getItem('absensiHarianLokal')) || { tanggal: hariIni, ids: [] };
+
     
-    // Jika tanggal berubah ke hari esok, reset catatan lokal
     if (cacheAbsen.tanggal !== hariIni) {
         cacheAbsen = { tanggal: hariIni, ids: [] };
     }
 
     if (cacheAbsen.ids.includes(qrCodeMessage)) {
-        try { navigator.vibrate([100, 50, 100]); } catch(e) {} // Getar khusus peringatan
+        try { navigator.vibrate([100, 50, 100]); } catch(e) {} 
         showStatus("⚠️ ID " + qrCodeMessage + " sudah input absen hari ini!", "offline");
         setTimeout(() => { isProcessing = false; }, 3000);
         return;
