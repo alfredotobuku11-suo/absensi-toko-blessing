@@ -4,7 +4,8 @@ const urlsToCache = [
   './index.html',
   './app.js',
   './html5-qrcode.min.js', // file kamera lokal
-  './manifest.json'
+  './manifest.json',
+  './20260921_171622_0000.png'
 ];
 
 // 1. Install & Simpan ke Cache
