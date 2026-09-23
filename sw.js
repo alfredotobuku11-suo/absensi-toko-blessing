@@ -1,9 +1,9 @@
-const CACHE_NAME = 'absensi-blessing-v7';
+const CACHE_NAME = 'absensi-blessing-v8';
 const urlsToCache = [
   './',
   './index.html',
   './app.js',
-  'https://unpkg.com/html5-qrcode', 
+  'https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js', // Pakai link langsung ini
   './20260921_171622_0000.png',
   './manifest.json'
 ];
