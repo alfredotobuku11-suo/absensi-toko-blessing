@@ -3,7 +3,7 @@ const urlsToCache = [
   './',
   './index.html',
   './app.js',
-  './html5-qrcode.min.js',
+  'https://unpkg.com/html5-qrcode', 
   './20260921_171622_0000.png',
   './manifest.json'
 ];
